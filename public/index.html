@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+
+    <title>Find a Coach</title>
+    <meta name="description" content="Find a coach and grow as a developer!" />
+    <link rel="stylesheet" href="/fontsome/fontawesome-free-7.2.0-web/css/all.min.css" />
+    <link rel="stylesheet" href="/bootstrapDep/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/bootstrapicons/icons-1.13.1/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="/adminlteDep/AdminLTE-4.0.0-rc7/dist/css/adminlte.min.css" />
+
+    <style>
+      .fs-7 {
+        font-size: 0.85rem !important;
+      }
+      /* Input & Textarea — tighter focus, AdminLTE default color */
+      .form-control:focus,
+      .form-select:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 1px rgba(0, 123, 255, 0.25);
+        outline: none;
+      }
+
+      /* Form control size — slightly smaller than Bootstrap default */
+      .form-control,
+      .form-select {
+        font-size: 0.8rem;
+        padding: 0.3rem 0.6rem;
+        height: auto;
+      }
+
+      /* Label — slightly larger globally */
+      .form-label,
+      label {
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+      }
+    </style>
+  </head>
+
+  <body class="layout-fixed sidebar-expand-lg bg-body-tertiary app-loaded sidebar-mini sidebar-collapse fs-7">
+    <noscript>
+      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+    </noscript>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+    <script src="/bootstrapDep/js/bootstrap.bundle.js"></script>
+    <script src="/adminlteDep/AdminLTE-4.0.0-rc7/dist/js/adminlte.js"></script>
+  </body>
+</html>

@@ -1,0 +1,12 @@
+export default {
+  setUser(state, payload) {
+    state.token = payload.token;
+    state.userId = payload.userId;
+    state.email = payload.email;
+    // state.tokenExpiration = payload.tokenExpiration;
+    state.autoLogoutValue = false;
+  },
+  didAutoLogout(state) {
+    state.autoLogoutValue = true;
+  },
+};
