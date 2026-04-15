@@ -13,7 +13,7 @@ import store from './store/index.js';
 import AboutUs from './pages/AboutUs.vue';
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory('/LadyBirdFinalProject/'),
 
   routes: [
     { path: '/', redirect: '/home' },
