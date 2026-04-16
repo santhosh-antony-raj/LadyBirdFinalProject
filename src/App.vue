@@ -10,7 +10,7 @@
     <!-- Main Content -->
     <!-- Breadcrumb -->
 
-    <div class="app-main">
+    <div class="app-main" style="padding-bottom: 0px !important">
       <transition name="route" mode="out-in">
         <router-view></router-view>
       </transition>

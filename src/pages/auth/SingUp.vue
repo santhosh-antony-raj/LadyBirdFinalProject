@@ -1,5 +1,5 @@
 <template>
-  <div class="register-page d-flex justify-content-start">
+  <div class="register-page">
     <div class="login-box">
       <div class="login-logo">
         <a href="../index2.html"><b>Find</b>Coach</a>
@@ -190,8 +190,8 @@ input.invalid {
   top: 40px;
   right: 50%;
   text-align: center;
-  /* or wherever you want it to float */
 }
+/* or wherever you want it to float */
 
 /* Make the parent a positioning context */
 .login-card-body {

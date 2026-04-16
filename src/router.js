@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 import CoachFilter from './components/CoachFilter.vue';
 import CoachList from './pages/coach/CoachList.vue';
 import CoachDetail from './pages/coach/CoachDetail.vue';
@@ -13,15 +13,11 @@ import store from './store/index.js';
 import AboutUs from './pages/AboutUs.vue';
 
 const router = createRouter({
-  history: createWebHistory('/LadyBirdFinalProject/'),
+  history: createWebHashHistory('/LadyBirdFinalProject/'),
 
   routes: [
-    { path: '/', redirect: '/home' },
-    /*  {
-      name: 'home',
-      path: '/home/:filter?',
-      components: { default: CoachFilter, coachlistshow: CoachList },
-    }, */
+    { path: '/', redirect: { name: 'login' } },
+
     {
       name: 'home',
       path: '/home',
@@ -75,9 +71,9 @@ const router = createRouter({
 });
 router.beforeEach(function (to, _, next) {
   if (to.meta.requiresAuth && !store.getters['userAuthMod/authenticate']) {
-    next('/login');
+    next({ name: 'login' });
   } else if (to.meta.requiresUnauth && store.getters['userAuthMod/authenticate']) {
-    next('/home');
+    next({ name: 'home' });
   } else {
     next();
   }

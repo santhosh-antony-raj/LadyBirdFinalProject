@@ -1,5 +1,5 @@
 <template>
-  <div class="login-page d-flex justify-content-start">
+  <div class="login-page">
     <div class="login-box">
       <div class="login-logo">
         <a href="../index2.html"><b>Find</b>Coach</a>
@@ -7,7 +7,13 @@
       <!-- /.login-logo -->
       <div class="card">
         <div class="card-body login-card-body">
-          <p class="login-box-msg">Sign in to start your session</p>
+          <p class="login-box-msg">
+            Sign in to start your session
+            <span class="icon-tooltip-wrap">
+              <i class="bi bi-info-circle" id="iconLogin"></i>
+              <span class="icon-tooltip">demo@gmail.com / 12345678</span>
+            </span>
+          </p>
 
           <form @submit.prevent="onSubmitData">
             <!-- Spinner centered at top -->
@@ -193,5 +199,49 @@ input.invalid {
 /* Make the parent a positioning context */
 .login-card-body {
   position: relative;
+}
+.icon-tooltip-wrap {
+  position: relative;
+  display: inline-block;
+  margin-left: 4px;
+}
+
+#iconLogin {
+  cursor: pointer;
+  color: #6c757d;
+  font-size: 15px;
+  vertical-align: middle;
+}
+
+.icon-tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  white-space: nowrap;
+  z-index: 999;
+  pointer-events: none;
+}
+
+/* Arrow under the tooltip */
+.icon-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #333;
+}
+
+/* Show on hover */
+.icon-tooltip-wrap:hover .icon-tooltip {
+  display: block;
 }
 </style>
