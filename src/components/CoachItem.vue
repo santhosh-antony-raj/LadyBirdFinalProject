@@ -25,19 +25,21 @@
 </template>
 
 <script>
+import { computed } from 'vue';
+
 export default {
   props: ['id', 'index', 'firstName', 'lastName', 'areas', 'hourlyRate', 'description'],
   emits: ['edit', 'delete'],
-  computed: {
-    fullName() {
-      return this.firstName + ' ' + this.lastName;
-    },
-    ViewDetail() {
-      return '/coachdetail/' + this.id;
-    },
-  },
-  methods: {
-    badgeColor(area) {
+  //setup
+  setup(props, { emit }) {
+    const fullName = computed(() => {
+      return props.firstName + ' ' + props.lastName;
+    });
+    const ViewDetail = computed(() => {
+      return '/coachdetail/' + props.id;
+    });
+    //show badgecolor
+    function badgeColor(area) {
       const colors = {
         frontend: 'warning',
         backend: 'success',
@@ -45,18 +47,25 @@ export default {
         career: 'primary',
       };
       return colors[area] || 'secondary';
-    },
-    onEdit() {
-      this.$emit('edit', {
-        id: this.id,
-        firstName: this.firstName,
-        lastName: this.lastName,
-        areas: [...this.areas],
-        hourlyRate: this.hourlyRate,
-        description: this.description,
+    }
+    //update details
+    function onEdit() {
+      emit('edit', {
+        id: props.id,
+        firstName: props.firstName,
+        lastName: props.lastName,
+        areas: [...props.areas],
+        hourlyRate: props.hourlyRate,
+        description: props.description,
       });
       console.log('called');
-    },
+    }
+    return {
+      fullName,
+      ViewDetail,
+      badgeColor,
+      onEdit,
+    };
   },
 };
 </script>

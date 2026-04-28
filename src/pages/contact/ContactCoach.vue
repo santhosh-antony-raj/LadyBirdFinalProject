@@ -52,60 +52,75 @@
 </template>
 
 <script>
+import { reactive, ref } from 'vue';
+import { useRoute } from 'vue-router';
+import { useStore } from 'vuex';
 export default {
-  data() {
-    return {
-      email: {
-        value: '',
-        isValid: true,
-      },
-      msg: {
-        value: '',
-        isValid: true,
-      },
-      isFormValid: true,
-    };
-  },
-  methods: {
-    clearValdity(input) {
-      this[input].isValid = true;
-      this.isFormValid = true;
-    },
-    ValidateForm() {
-      if (this.email.value === '') {
-        this.email.isValid = false;
-        this.isFormValid = false;
+  setup() {
+    const route = useRoute();
+    const store = useStore();
+    let email = reactive({
+      value: '',
+      isValid: true,
+    });
+    let msg = reactive({
+      value: '',
+      isValid: true,
+    });
+    let isFormValid = ref(true);
+    function clearValdity(input) {
+      if (input === 'email') {
+        email.isValid = true;
       }
-      if (this.msg.value === '') {
-        this.msg.isValid = false;
-        this.isFormValid = false;
+      if (input === 'msg') {
+        msg.isValid = true;
       }
-    },
-    saveData() {
-      this.isFormValid = true;
-      this.ValidateForm();
-      //alert('saved');
-      if (!this.isFormValid) {
+      isFormValid.value = true;
+    }
+    //valiadtion form
+    function ValidateForm() {
+      if (email.value === '') {
+        email.isValid = false;
+        isFormValid.value = false;
+      }
+      if (msg.value === '') {
+        msg.isValid = false;
+        isFormValid.value = false;
+      }
+    }
+    //submit form logic
+    function saveData() {
+      isFormValid.value = true;
+      ValidateForm();
+      if (!isFormValid.value) {
         return;
       }
-      this.$store.dispatch('contactMod/addMsg', {
-        email: this.email.value,
-        msg: this.msg.value,
-        coachId: this.$route.params.id,
+      store.dispatch('contactMod/addMsg', {
+        email: email.value,
+        msg: msg.value,
+        coachId: route.params.id,
       });
-
       const toastEl = document.getElementById('toastDefault');
       const toast = new window.bootstrap.Toast(toastEl);
       toast.show();
-      //reset value
-      this.email = { value: '', isValid: true };
-      this.msg = { value: '', isValid: true };
-    },
+      email.value = '';
+      email.isValid = true;
+      msg.value = '';
+      msg.isValid = true;
+    }
+    return {
+      email,
+      msg,
+      isFormValid,
+      clearValdity,
+      ValidateForm,
+      saveData,
+    };
   },
 };
 </script>
 
-<style>
+<style scoped>
 input.invalid,
 textarea.invalid {
   border: 1px solid red;

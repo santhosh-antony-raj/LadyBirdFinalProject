@@ -8,19 +8,25 @@
 </template>
 
 <script>
+import { useRoute } from 'vue-router';
+import { computed } from 'vue';
 export default {
-  computed: {
-    label() {
-      const filter = this.$route.params.filter;
-      const id = this.$route.params.id;
-      const pname = this.$route.name;
+  setup() {
+    const route = useRoute();
+    const label = computed(() => {
+      const filter = route.params.filter;
+      const id = route.params.id;
+      const pname = route.name;
       if (filter) {
         return filter.charAt(0).toUpperCase() + filter.slice(1);
       } else if (id) {
         return `#${id}`;
       }
       return pname;
-    },
+    });
+    return {
+      label,
+    };
   },
 };
 </script>

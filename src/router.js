@@ -9,8 +9,7 @@ import CoachRegister from './pages/coach/CoachRegister.vue';
 import UserAuth from './pages/auth/UserAuth.vue';
 import SignUp from './pages/auth/SingUp.vue';
 import store from './store/index.js';
-
-import AboutUs from './pages/AboutUs.vue';
+import { defineAsyncComponent } from 'vue';
 
 const router = createRouter({
   history: createWebHashHistory('/LadyBirdFinalProject/'),
@@ -50,7 +49,7 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
 
-    { name: 'aboutUs', path: '/aboutus', component: AboutUs, meta: { requiresAuth: true } },
+    { name: 'aboutUs', path: '/aboutus', component: defineAsyncComponent(() => import('./pages/AboutUs.vue')), meta: { requiresAuth: true } },
 
     {
       name: 'login',
@@ -64,7 +63,7 @@ const router = createRouter({
       component: SignUp,
       meta: { requiresUnauth: true },
     },
-    { name: 'urlNotFound', path: '/:notFound(.)*', component: PageNotFound },
+    { name: 'urlNotFound', path: '/:pathMatch(.*)*', component: PageNotFound },
   ],
   linkActiveClass: '',
   linkExactActiveClass: 'active',

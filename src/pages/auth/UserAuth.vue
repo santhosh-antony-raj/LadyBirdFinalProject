@@ -23,7 +23,7 @@
 
             <div class="field-wrap mb-1">
               <div class="input-group">
-                <input type="email" class="form-control" placeholder="Email" aria-label="Email" v-model.trim="email.value" :class="{ invalid: !email.isValid }" @blur="clearValdity('email')" />
+                <input type="email" class="form-control" placeholder="Email" aria-label="Email" v-model.trim="email.value" :class="{ invalid: !email.isValid }" @blur="clearValidity('email')" />
                 <div class="input-group-text">
                   <span class="bi bi-envelope"></span>
                 </div>
@@ -39,10 +39,10 @@
                   placeholder="Password"
                   v-model.trim="password.value"
                   :class="{ invalid: !password.isValid }"
-                  @blur="clearValdity('password')"
+                  @blur="clearValidity('password')"
                 />
-                <div class="input-group-text">
-                  <span :class="showPassword ? 'bi bi-eye' : 'bi bi-eye-slash'" @click="togglePassword" style="cursor: pointer"></span>
+                <div class="input-group-text showpassword">
+                  <span :class="showPassword ? 'bi bi-eye' : 'bi bi-eye-slash'" @click="togglePassword"></span>
                 </div>
               </div>
               <p class="field-error" :class="{ visible: !password.isValid }">Password Should Not Be Empty</p>
@@ -90,83 +90,104 @@
 </template>
 
 <script>
+import { reactive, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 export default {
-  data() {
-    return {
-      email: {
-        value: '',
-        isValid: true,
-      },
-      password: {
-        value: '',
-        isValid: true,
-      },
-      showPassword: false,
-      formIsValid: true,
-      isLoading: false,
-      error: null,
-    };
-  },
-  methods: {
-    clearValdity(input) {
-      this[input].isValid = true;
-      this.formIsValid = true;
-    },
-    togglePassword() {
-      this.showPassword = !this.showPassword;
-    },
-    validateForm() {
-      if (this.email.value === '' || !this.email.value.includes('@')) {
-        this.email.isValid = false;
-        this.formIsValid = false;
+  setup() {
+    const store = useStore();
+    const route = useRoute();
+    const router = useRouter();
+    let email = reactive({
+      value: '',
+      isValid: true,
+    });
+    let password = reactive({
+      value: '',
+      isValid: true,
+    });
+    let showPassword = ref(false);
+    let formIsValid = ref(true);
+    let isLoading = ref(false);
+    let error = ref(null);
+    //clearvalidity through blur
+    function clearValidity(input) {
+      if (input === 'email') {
+        email.isValid = true;
+        formIsValid.value = true;
       }
-      if (this.password.value.length < 6) {
-        this.password.isValid = false;
-        this.formIsValid = false;
+      if (input === 'password') {
+        password.isValid = true;
+        formIsValid.value = true;
       }
-    },
-    async onSubmitData() {
-      this.formIsValid = true; // reset before each validation run
-      this.validateForm();
-      this.handleError();
-
-      if (!this.formIsValid) {
+    }
+    //funct for passord icon
+    function togglePassword() {
+      showPassword.value = !showPassword.value;
+    }
+    //validation logic
+    function validateForm() {
+      formIsValid.value = true;
+      if (email.value === '' || !email.value.includes('@')) {
+        email.isValid = false;
+        formIsValid.value = false;
+      }
+      if (password.value.length < 6) {
+        password.isValid = false;
+        formIsValid.value = false;
+      }
+    }
+    //submit logic
+    async function onSubmitData() {
+      formIsValid.value = true;
+      validateForm();
+      error.value = null;
+      if (!formIsValid.value) {
         return;
       }
-
+      //send http request
       const payloadAction = {
-        email: this.email.value,
-        password: this.password.value,
+        email: email.value,
+        password: password.value,
       };
-
-      this.isLoading = true;
+      isLoading.value = true;
       try {
-        await this.$store.dispatch('userAuthMod/login', payloadAction);
+        await store.dispatch('userAuthMod/login', payloadAction);
         const toastEl = document.getElementById('toastDefault');
         const toast = new window.bootstrap.Toast(toastEl);
         toast.show();
-        this.isLoading = false;
+        isLoading.value = false;
         setTimeout(() => {
-          const redirectUrl = '/' + (this.$route.query.redirect || 'home');
-          this.$router.replace(redirectUrl);
+          const redirectUrl = '/' + (route.query.redirect || 'home');
+          router.replace(redirectUrl);
         }, 1500);
       } catch (err) {
         console.log(err);
-        this.error = err.message || 'login failed';
-        this.isLoading = false;
+        error.value = err.message || 'signup failed';
+        isLoading.value = false;
         const toastEl = document.getElementById('toastDefault');
         const toast = new window.bootstrap.Toast(toastEl);
         toast.show();
       }
-    },
-    handleError() {
-      this.error = null;
-    },
+    }
+
+    return {
+      email,
+      password,
+      showPassword,
+      formIsValid,
+      isLoading,
+      error,
+      clearValidity,
+      togglePassword,
+      validateForm,
+      onSubmitData,
+    };
   },
 };
 </script>
 
-<style>
+<style scoped>
 input.invalid {
   border: 1px solid red;
 }
@@ -243,5 +264,8 @@ input.invalid {
 /* Show on hover */
 .icon-tooltip-wrap:hover .icon-tooltip {
   display: block;
+}
+.showpassword {
+  cursor: pointer;
 }
 </style>

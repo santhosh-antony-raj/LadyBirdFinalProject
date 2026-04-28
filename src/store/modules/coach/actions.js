@@ -1,9 +1,6 @@
 export default {
   addCoach(context, data) {
-    console.log('action called coach', data);
-
     const id = context.rootGetters['userAuthMod/userId'];
-    console.log(id);
 
     const coachData = {
       //id: context.rootGetters.userId,
@@ -24,8 +21,5 @@ export default {
   },
   updateCoach(context, payload) {
     context.commit('updateCoach', payload);
-    console.log(payload);
-
-    console.log('action update called');
   },
 };

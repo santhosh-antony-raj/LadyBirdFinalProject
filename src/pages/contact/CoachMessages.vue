@@ -8,7 +8,7 @@
       <div class="row">
         <div class="col-12 col-md-12">
           <div class="timeline">
-            <!-- ✓ Loop over all messages -->
+            <!--Loop over all messages -->
             <template v-if="coachMessage">
               <template v-for="message in coachMessage" :key="message.id">
                 <!-- <div class="time-label">
@@ -26,7 +26,7 @@
                       {{ message.msg }}
                     </div>
                     <div class="timeline-footer">
-                      <a class="btn btn-danger btn-sm fs-6" @click="msgDelete(message.id)">Delete</a>
+                      <a class="btn btn-danger btn-sm fs-6 del" @click="msgDelete(message.id)">Delete</a>
                     </div>
                   </div>
                 </div>
@@ -50,20 +50,24 @@
 
 <script>
 import BreadCrumb from '../../components/layout/BreadCrumb.vue';
-
+import { computed } from 'vue';
+import { useStore } from 'vuex';
 export default {
   components: {
     BreadCrumb,
   },
-  computed: {
-    coachMessage() {
-      return this.$store.getters['contactMod/getMsg'];
-    },
-  },
-  methods: {
-    msgDelete(id) {
-      this.$store.dispatch('contactMod/delMsg', id);
-    },
+  setup() {
+    const store = useStore();
+    const coachMessage = computed(() => {
+      return store.getters['contactMod/getMsg'];
+    });
+    function msgDelete(id) {
+      store.dispatch('contactMod/delMsg', id);
+    }
+    return {
+      coachMessage,
+      msgDelete,
+    };
   },
 };
 </script>

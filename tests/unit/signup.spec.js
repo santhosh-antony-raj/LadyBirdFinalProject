@@ -1,22 +1,29 @@
 import { mount } from '@vue/test-utils';
 import Signup from '../../src/pages/auth/SingUp.vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 
+jest.mock('vue-router', () => ({
+  useRouter: jest.fn(),
+  useRoute: jest.fn(),
+}));
+jest.mock('vuex', () => ({
+  useStore: jest.fn(),
+}));
 describe('Signup.vue', () => {
   let wrapper;
-
-  const mockRouter = {
-    replace: jest.fn(),
-  };
-
-  const mockRoute = {
-    query: {},
-  };
-
-  const mockStore = {
-    dispatch: jest.fn(),
-  };
+  let mockRouter;
+  let mockRoute;
+  let mockStore;
 
   beforeEach(() => {
+    mockRouter = { replace: jest.fn() };
+    mockRoute = { query: {} };
+    mockStore = { dispatch: jest.fn() };
+
+    useRouter.mockReturnValue(mockRouter);
+    useRoute.mockReturnValue(mockRoute);
+    useStore.mockReturnValue(mockStore);
     // Mock Bootstrap Toast
     window.bootstrap = {
       Toast: jest.fn().mockImplementation(() => ({
@@ -26,14 +33,11 @@ describe('Signup.vue', () => {
 
     wrapper = mount(Signup, {
       global: {
+        stubs: ['router-link', 'base-spinner'],
         mocks: {
           $store: mockStore,
           $router: mockRouter,
           $route: mockRoute,
-        },
-        stubs: {
-          'router-link': true,
-          'base-spinner': true,
         },
       },
     });
@@ -134,7 +138,7 @@ describe('Signup.vue', () => {
   test('clearValidity resets field', () => {
     wrapper.vm.email.isValid = false;
 
-    wrapper.vm.clearValdity('email');
+    wrapper.vm.clearValidity('email');
 
     expect(wrapper.vm.email.isValid).toBe(true);
   });

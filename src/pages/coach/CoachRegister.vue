@@ -20,7 +20,7 @@
                       <label for="validationCustom01" class="form-label">First name</label>
                       <label class="text-danger">*</label>
                       <div class="field-wrap">
-                        <input type="text" class="form-control" :class="{ invalid: !firstName.isValid }" v-model.trim="firstName.value" @blur="clearValdity('firstName')" />
+                        <input type="text" class="form-control" :class="{ invalid: !firstName.isValid }" v-model.trim="firstName.value" @blur="clearValidity(firstName)" />
                         <p class="field-error" :class="{ visible: !firstName.isValid }">First name should not be empty</p>
                       </div>
                     </div>
@@ -29,7 +29,7 @@
                       <label for="validationCustom02" class="form-label">Last name</label>
                       <label class="text-danger">*</label>
                       <div class="field-wrap">
-                        <input type="text" class="form-control" :class="{ invalid: !lastName.isValid }" v-model.trim="lastName.value" @blur="clearValdity('lastName')" />
+                        <input type="text" class="form-control" :class="{ invalid: !lastName.isValid }" v-model.trim="lastName.value" @blur="clearValidity(lastName)" />
                         <p class="field-error" :class="{ visible: !lastName.isValid }">Last name should not be empty</p>
                       </div>
                     </div>
@@ -38,7 +38,7 @@
                       <label for="rate" class="form-label">Hourly rate</label>
                       <label class="text-danger">*</label>
                       <div class="field-wrap">
-                        <input type="number" class="form-control" :class="{ invalid: !rate.isValid }" v-model.number="rate.value" @blur="clearValdity('rate')" />
+                        <input type="number" class="form-control" :class="{ invalid: !rate.isValid }" v-model.number="rate.value" @blur="clearValidity(rate)" />
                         <p class="field-error" :class="{ visible: !rate.isValid }">Hourly rate should not be empty</p>
                       </div>
                     </div>
@@ -47,7 +47,7 @@
                       <label for="desc" class="fs-6">Description</label>
                       <label class="text-danger">*</label>
                       <div class="field-wrap">
-                        <textarea class="form-control" :class="{ invalid: !description.isValid }" v-model="description.value" @blur="clearValdity('description')" rows="3"></textarea>
+                        <textarea class="form-control" :class="{ invalid: !description.isValid }" v-model="description.value" @blur="clearValidity(description)" rows="3"></textarea>
                         <p class="field-error" :class="{ visible: !description.isValid }">Description should not be empty</p>
                       </div>
                     </div>
@@ -58,19 +58,19 @@
                         <div class="row g-2">
                           <div class="col-12 col-sm-4">
                             <div class="form-check">
-                              <input type="checkbox" class="form-check-input" id="frontend" value="frontend" v-model="areas.value" @change="clearValdity('areas')" />
+                              <input type="checkbox" class="form-check-input" id="frontend" value="frontend" v-model="areas.value" @change="clearValidity(areas)" />
                               <label class="form-check-label" for="frontend">Frontend</label>
                             </div>
                           </div>
                           <div class="col-12 col-sm-4">
                             <div class="form-check">
-                              <input type="checkbox" class="form-check-input" id="backend" value="backend" v-model="areas.value" @change="clearValdity('areas')" />
+                              <input type="checkbox" class="form-check-input" id="backend" value="backend" v-model="areas.value" @change="clearValidity(areas)" />
                               <label class="form-check-label" for="backend">Backend</label>
                             </div>
                           </div>
                           <div class="col-12 col-sm-4">
                             <div class="form-check">
-                              <input type="checkbox" class="form-check-input" id="career" value="career" v-model="areas.value" @change="clearValdity('areas')" />
+                              <input type="checkbox" class="form-check-input" id="career" value="career" v-model="areas.value" @change="clearValidity(areas)" />
                               <label class="form-check-label" for="career">Career</label>
                             </div>
                           </div>
@@ -83,7 +83,7 @@
                       <div class="form-check">
                         <div class="field-wrap">
                           <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="agreed" v-model="agree.value" id="invalidCheck" @change="clearValdity('agree')" />
+                            <input class="form-check-input" type="checkbox" value="agreed" v-model="agree.value" id="invalidCheck" @change="clearValidity(agree)" />
                             <label class="form-check-label" for="invalidCheck">Agree to terms and conditions</label>
                           </div>
                           <p class="field-error" :class="{ visible: !agree.isValid }">You must agree before submitting</p>
@@ -120,106 +120,154 @@
 </template>
 
 <script>
+import { reactive, ref } from 'vue';
 import BreadCrumb from '../../components/layout/BreadCrumb.vue';
+import { useStore } from 'vuex';
 
 export default {
   components: {
     BreadCrumb,
   },
-  data() {
-    return {
-      firstName: {
-        value: '',
-        isValid: true,
-      },
-      lastName: {
-        value: '',
-        isValid: true,
-      },
-      description: {
-        value: '',
-        isValid: true,
-      },
-      rate: {
-        value: null,
-        isValid: true,
-      },
-      areas: {
-        value: [],
-        isValid: true,
-      },
-      agree: {
-        value: '',
-        isValid: true,
-      },
-      formIsValid: true,
-    };
-  },
-  methods: {
-    clearValdity(input) {
-      this[input].isValid = true;
+
+  setup() {
+    const store = useStore();
+    let firstName = reactive({
+      value: '',
+      isValid: true,
+    });
+    let lastName = reactive({
+      value: '',
+      isValid: true,
+    });
+    let description = reactive({
+      value: '',
+      isValid: true,
+    });
+    let rate = reactive({
+      value: '',
+      isValid: true,
+    });
+    let areas = reactive({
+      value: [],
+      isValid: true,
+    });
+    let agree = reactive({
+      value: false,
+      isValid: true,
+    });
+    let formIsValid = ref(true);
+    function clearValidity(field) {
+      field.isValid = true;
       this.formIsValid = true;
-    },
-    validateForm() {
-      this.formsInValid = true;
-      if (this.firstName.value === '') {
-        this.formIsValid = false;
-        this.firstName.isValid = false;
-      }
-      if (this.lastName.value === '') {
-        this.formIsValid = false;
-        this.lastName.isValid = false;
-      }
-      if (this.description.value === '') {
-        this.formIsValid = false;
-        this.description.isValid = false;
-      }
-      if (!this.rate.value || this.rate.value < 0) {
-        this.formIsValid = false;
-        this.rate.isValid = false;
-      }
-      if (this.areas.value.length === 0) {
-        this.formIsValid = false;
-        this.areas.isValid = false;
-      }
-      if (this.agree.value === '') {
-        this.formIsValid = false;
-        this.agree.isValid = false;
-      }
-    },
-    onSubmitData() {
-      this.validateForm();
+    }
+    //validate form
+    function validateForm() {
+      formIsValid.value = true;
+
+      const fields = ['firstName', 'lastName', 'description', 'rate', 'areas', 'agree'];
+
+      const fieldMap = {
+        firstName,
+        lastName,
+        description,
+        rate,
+        areas,
+        agree,
+      };
+
+      fields.forEach((field) => {
+        switch (field) {
+          case 'firstName':
+          case 'lastName':
+          case 'description':
+            if (fieldMap[field].value === '') {
+              formIsValid.value = false;
+              fieldMap[field].isValid = false;
+            }
+            break;
+
+          case 'rate':
+            if (!rate.value || rate.value < 0) {
+              formIsValid.value = false;
+              rate.isValid = false;
+            }
+            break;
+
+          case 'areas':
+            if (areas.value.length === 0) {
+              formIsValid.value = false;
+              areas.isValid = false;
+            }
+            break;
+
+          case 'agree':
+            if (!agree.value) {
+              formIsValid.value = false;
+              agree.isValid = false;
+            }
+            break;
+
+          default:
+            console.warn(`Unknown field: ${field}`);
+        }
+      });
+    }
+    //form submit logic
+    function onSubmitData() {
+      validateForm();
       // alert('hello');
-      if (!this.formIsValid) {
+      if (!formIsValid.value) {
         return;
       }
       const submitData = {
-        first: this.firstName.value,
-        last: this.lastName.value,
-        desc: this.description.value,
-        rate: this.rate.value,
-        areas: this.areas.value,
-        agree: this.agree.value,
+        first: firstName.value,
+        last: lastName.value,
+        desc: description.value,
+        rate: rate.value,
+        areas: areas.value,
+        agree: agree.value,
       };
       console.log(submitData);
-      this.$store.dispatch('coachMod/addCoach', submitData);
+      store.dispatch('coachMod/addCoach', submitData);
       const toastEl = document.getElementById('toastDefault');
       const toast = new window.bootstrap.Toast(toastEl);
       toast.show();
       //reset form
-      this.firstName = { value: '', isValid: true };
-      this.lastName = { value: '', isValid: true };
-      this.description = { value: '', isValid: true };
-      this.rate = { value: null, isValid: true };
-      this.areas = { value: [], isValid: true };
-      this.agree = { value: '', isValid: true };
-      this.formIsValid = true;
-    },
+      firstName.value = '';
+      firstName.isValid = true;
+
+      lastName.value = '';
+      lastName.isValid = true;
+
+      description.value = '';
+      description.isValid = true;
+
+      rate.value = null;
+      rate.isValid = true;
+
+      areas.value = [];
+      areas.isValid = true;
+
+      agree.value = '';
+      agree.isValid = true;
+      formIsValid.value = true;
+    }
+    return {
+      onSubmitData,
+      validateForm,
+      clearValidity,
+      firstName,
+      lastName,
+      rate,
+      description,
+      areas,
+      agree,
+    };
   },
 };
 </script>
 
-<style>
+<style scoped>
 input.invalid,
 textarea.invalid {
   border: 1px solid red !important;

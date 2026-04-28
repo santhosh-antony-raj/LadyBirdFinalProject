@@ -1,6 +1,14 @@
 import { mount } from '@vue/test-utils';
 import CoachList from '../../src/pages/coach/CoachList.vue';
+import { useRoute } from 'vue-router';
+import { useStore } from 'vuex';
 
+jest.mock('vue-router', () => ({
+  useRoute: jest.fn(),
+}));
+jest.mock('vuex', () => ({
+  useStore: jest.fn(),
+}));
 describe('CoachList.vue', () => {
   //Computed property
   it('filteredCoach', () => {
@@ -9,6 +17,8 @@ describe('CoachList.vue', () => {
       { id: 'c1', name: 'alice', areas: 'frontend' },
       { id: 'c2', name: 'bob', areas: 'backend' },
     ];
+    useStore.mockReturnValue({ getters: { 'coachMod/coaches': fakeCoaches } });
+    useRoute.mockReturnValue({ params: { filter: 'frontend' } });
 
     //fake mock
     const wrapper = mount(CoachList, {
@@ -16,15 +26,8 @@ describe('CoachList.vue', () => {
         //stubs to omit
         stubs: ['router-link', 'the-pagination', 'coach-item'],
         mocks: {
-          $store: {
-            getters: {
-              'coachMod/coaches': fakeCoaches,
-            },
-          },
           $route: {
-            params: {
-              filter: 'frontend',
-            },
+            params: { filter: 'frontend' },
           },
         },
       },
@@ -42,15 +45,14 @@ describe('CoachList.vue', () => {
       { id: '5', areas: ['all'] },
       { id: '6', areas: ['all'] },
     ];
+    useStore.mockReturnValue({ getters: { 'coachMod/coaches': fakeCoaches } });
+    useRoute.mockReturnValue({ params: { filter: 'all' } });
     const wrapper = mount(CoachList, {
       global: {
         stubs: ['router-link'],
         mocks: {
-          $route: { params: { filter: 'all' } },
-          $store: {
-            getters: {
-              'coachMod/coaches': fakeCoaches,
-            },
+          $route: {
+            params: { filter: 'all' },
           },
         },
       },
@@ -67,12 +69,15 @@ describe('CoachList.vue', () => {
   //methods
   it('NextPrevGoto pages', async () => {
     const fakeCoaches = new Array(6).fill({ id: 'c1', areas: 'all' });
+    useStore.mockReturnValue({ getters: { 'coachMod/coaches': fakeCoaches } });
+    useRoute.mockReturnValue({ params: { filter: 'all' } });
     const wrapper = mount(CoachList, {
       global: {
         stubs: ['router-link'],
         mocks: {
-          $route: { params: { filter: 'all' } },
-          $store: { getters: { 'coachMod/coaches': fakeCoaches } },
+          $route: {
+            params: { filter: 'all' },
+          },
         },
       },
     });
@@ -114,14 +119,14 @@ describe('CoachList.vue', () => {
     window.bootstrap.Modal.getInstance = jest.fn().mockImplementation(() => ({
       hide: hideMock,
     }));
+    useStore.mockReturnValue({ getters: { 'coachMod/coaches': [{ id: 'c1', filter: 'all' }] }, dispatch: dispatchdata });
+    useRoute.mockReturnValue({ params: { filter: 'all' } });
     const wrapper = mount(CoachList, {
       global: {
         stubs: ['router-link', 'the-pagination', 'coach-item'],
         mocks: {
-          $route: { params: { filter: 'all' } },
-          $store: {
-            getters: { 'coachMod/coaches': [{ id: 'c1', filter: 'all' }] },
-            dispatch: dispatchdata,
+          $route: {
+            params: { filter: 'frontend' },
           },
         },
       },
@@ -144,12 +149,15 @@ describe('CoachList.vue', () => {
     window.bootstrap.Modal.getInstance = jest.fn().mockImplementation(() => ({
       hide: hideMock,
     }));
+    useStore.mockReturnValue({ getters: { 'coachMod/coaches': [{ id: 'c1', filter: 'all' }] }, dispatch: dispatchMock });
+    useRoute.mockReturnValue({ params: { filter: 'all' } });
     const wrapper = mount(CoachList, {
       global: {
         stubs: ['router-link', 'the-pagination', 'coach-item'],
         mocks: {
-          $route: { params: { filter: 'all' } },
-          $store: { getters: { 'coachMod/coaches': [{ id: 'c1', areas: 'all' }] }, dispatch: dispatchMock },
+          $route: {
+            params: { filter: 'all' },
+          },
         },
       },
     });
@@ -179,13 +187,15 @@ describe('CoachList.vue', () => {
     window.bootstrap.Modal.getInstance = jest.fn().mockImplementation(() => ({
       hide: hideMock,
     }));
-
+    useStore.mockReturnValue({ getters: { 'coachMod/coaches': [{ id: 'c1', filter: 'all' }] }, dispatch: showDispatch });
+    useRoute.mockReturnValue({ params: { filter: 'all' } });
     const wrapper = mount(CoachList, {
       global: {
         stubs: ['router-link', 'the-pagination'],
         mocks: {
-          $route: { params: { filter: 'all' } },
-          $store: { getters: { 'coachMod/coaches': [{ id: 'c1', areas: 'all' }] }, dispatch: showDispatch },
+          $route: {
+            params: { filter: 'all' },
+          },
         },
       },
     });
@@ -200,15 +210,14 @@ describe('CoachList.vue', () => {
     expect(showDispatch).toHaveBeenCalledWith('coachMod/updateCoach', expect.any(Object));
   });
   it('filteredCoaches returns empty array when no filter param', () => {
+    useStore.mockReturnValue({ getters: { 'coachMod/coaches': [{ id: 'c1', filter: 'frontend' }] } });
+    useRoute.mockReturnValue({ params: {} });
     const wrapper = mount(CoachList, {
       global: {
         stubs: ['router-link', 'the-pagination', 'coach-item'],
         mocks: {
-          $route: { params: {} },
-          $store: {
-            getters: {
-              'coachMod/coaches': [{ id: 'c1', areas: ['frontend'] }],
-            },
+          $route: {
+            params: {},
           },
         },
       },

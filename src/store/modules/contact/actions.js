@@ -6,7 +6,6 @@ export default {
       msg: payload.msg,
       coachId: payload.coachId,
     };
-    console.log('actions', msg);
 
     context.commit('addMsg', msg);
   },

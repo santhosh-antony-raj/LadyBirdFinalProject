@@ -1,8 +1,8 @@
 <template>
   <div class="container-fluid">
     <div class="d-flex justify-content-between">
-      <h5 class="mt-2" v-if="this.$route.params.filter">Filtered List</h5>
-      <bread-crumb v-if="this.$route.params.filter"></bread-crumb>
+      <h5 class="mt-2" v-if="$route.params.filter">Filtered List</h5>
+      <bread-crumb v-if="$route.params.filter"></bread-crumb>
     </div>
     <div>
       <div>
@@ -91,13 +91,27 @@
           <div class="modal-body">
             <div class="field-wrap">
               <label class="form-label">First Name<span class="text-danger">*</span></label>
-              <input v-model="editForm.firstName.value" type="text" class="form-control" :class="{ invalid: !editForm.firstName.isValid }" placeholder="First Name" @blur="clearValdity('firstName')" />
+              <input
+                v-model="editForm.firstName.value"
+                type="text"
+                class="form-control"
+                :class="{ invalid: !editForm.firstName.isValid }"
+                placeholder="First Name"
+                @blur="clearValdity(editForm.firstName)"
+              />
               <p class="field-error" :class="{ visible: !editForm.firstName.isValid }">FirstName should not be empty</p>
             </div>
 
             <div class="field-wrap">
               <label class="form-label">Last Name<span class="text-danger">*</span></label>
-              <input v-model="editForm.lastName.value" type="text" class="form-control" :class="{ invalid: !editForm.lastName.isValid }" placeholder="Last Name" @blur="clearValdity('lastName')" />
+              <input
+                v-model="editForm.lastName.value"
+                type="text"
+                class="form-control"
+                :class="{ invalid: !editForm.lastName.isValid }"
+                placeholder="Last Name"
+                @blur="clearValdity(editForm.lastName)"
+              />
               <p class="field-error" :class="{ visible: !editForm.lastName.isValid }">LastName should not be empty</p>
             </div>
 
@@ -109,7 +123,7 @@
                 class="form-control"
                 :class="{ invalid: !editForm.hourlyRate.isValid }"
                 placeholder="Hourly Rate"
-                @blur="clearValdity('hourlyRate')"
+                @blur="clearValdity(editForm.hourlyRate)"
               />
               <p class="field-error" :class="{ visible: !editForm.hourlyRate.isValid }">HourlyRate should not be empty</p>
             </div>
@@ -125,7 +139,7 @@
                     :id="'area-' + area"
                     :value="area"
                     v-model="editForm.areas.value"
-                    @change="clearValdity('areas')"
+                    @change="clearValdity(editForm.areas)"
                   />
                   <label class="form-check-label text-capitalize" :for="'area-' + area">{{ area }}</label>
                 </div>
@@ -141,7 +155,7 @@
                 :class="{ invalid: !editForm.description.isValid }"
                 rows="3"
                 placeholder="Description"
-                @blur="clearValdity('description')"
+                @blur="clearValdity(editForm.description)"
               ></textarea>
               <p class="field-error" :class="{ visible: !editForm.description.isValid }">Description should not be empty</p>
             </div>
@@ -181,156 +195,203 @@
 </template>
 
 <script>
+import { useStore } from 'vuex';
 import CoachItem from '../../components/CoachItem.vue';
 import BreadCrumb from '../../components/layout/BreadCrumb.vue';
 import ThePagination from '../../components/ThePagination.vue';
+import { ref, reactive, computed, watch } from 'vue';
+import { useRoute } from 'vue-router';
 
 export default {
   components: { CoachItem, ThePagination, BreadCrumb },
-  data() {
-    return {
-      currentPage: 1,
-      perPage: 5,
-      allAreas: ['frontend', 'backend', 'career', 'devops'],
-      pendingDeleteId: null,
-      editForm: {
-        id: null, //  important for update
-        firstName: {
-          value: '',
-          isValid: true,
-        },
-        lastName: {
-          value: '',
-          isValid: true,
-        },
-        areas: {
-          value: [],
-          isValid: true,
-        },
-        description: {
-          value: '',
-          isValid: true,
-        },
-        hourlyRate: {
-          value: '',
-          isValid: true,
-        },
+  setup() {
+    const store = useStore();
+    const route = useRoute();
+    let currentPage = ref(1);
+    let perPage = ref(5);
+    let allAreas = ref(['frontend', 'backend', 'career', 'devops']);
+    let editForm = reactive({
+      id: null,
+      firstName: {
+        value: '',
+        isValid: true,
       },
-      formIsValid: true,
-    };
-  },
-  computed: {
-    filteredCoaches() {
-      const coaches = this.$store.getters['coachMod/coaches'];
-      const filter = this.$route.params.filter;
+      lastName: {
+        value: '',
+        isValid: true,
+      },
+      areas: {
+        value: [],
+        isValid: true,
+      },
+      description: {
+        value: '',
+        isValid: true,
+      },
+      hourlyRate: {
+        value: '',
+        isValid: true,
+      },
+    });
+    let formIsValid = ref(true);
+    let pendingDeleteId = ref(null);
+    //filter coach logic
+    const filteredCoaches = computed(() => {
+      const coaches = store.getters['coachMod/coaches'];
+      const filter = route.params.filter;
       if (!filter) return [];
       return coaches.filter((c) => c.areas?.includes(filter));
-    },
-    paginatedCoaches() {
-      const start = (this.currentPage - 1) * this.perPage;
-      return this.filteredCoaches.slice(start, start + this.perPage);
-    },
-    totalPages() {
-      return Math.ceil(this.filteredCoaches.length / this.perPage);
-    },
-  },
-  methods: {
-    nextPage() {
-      if (this.currentPage < this.totalPages) this.currentPage++;
-    },
-    previousPage() {
-      if (this.currentPage > 1) this.currentPage--;
-    },
-    gotoPage(page) {
-      this.currentPage = page;
-    },
-    /*  this.editForm = { ...coachData, areas: [...coachData.areas] }; */
-    openEditModal(coachData) {
-      this.editForm = {
-        id: coachData.id,
-        firstName: { value: coachData.firstName, isValid: true },
-        lastName: { value: coachData.lastName, isValid: true },
-        hourlyRate: { value: coachData.hourlyRate, isValid: true },
-        areas: { value: [...coachData.areas], isValid: true },
-        description: { value: coachData.description, isValid: true },
-      };
+    });
+    //pagination logics
+    const paginatedCoaches = computed(() => {
+      const start = (currentPage.value - 1) * perPage.value;
+      return filteredCoaches.value.slice(start, start + perPage.value);
+    });
+    const totalPages = computed(() => {
+      return Math.ceil(filteredCoaches.value.length / perPage.value);
+    });
+    function nextPage() {
+      if (currentPage.value < totalPages.value) currentPage.value++;
+    }
+    function previousPage() {
+      if (currentPage.value > 1) currentPage.value--;
+    }
+    function gotoPage(page) {
+      currentPage.value = page;
+    }
+    //update logic for openeditModal
+    function openEditModal(coachData) {
+      editForm.id = coachData.id;
+      editForm.firstName.value = coachData.firstName;
+      editForm.firstName.isValid = true;
+
+      editForm.lastName.value = coachData.lastName;
+      editForm.lastName.isValid = true;
+
+      editForm.hourlyRate.value = coachData.hourlyRate;
+      editForm.hourlyRate.isValid = true;
+
+      editForm.areas.value = [...coachData.areas];
+      editForm.areas.isValid = true;
+
+      editForm.description.value = coachData.description;
+      editForm.description.isValid = true;
 
       const modal = new window.bootstrap.Modal(document.getElementById('editCoachModal'));
       modal.show();
-    },
-    clearValdity(field) {
-      this.editForm[field].isValid = true;
-      this.formIsValid = true;
-    },
-    validateForm() {
-      this.formsIsValid = true;
-      if (this.editForm.firstName.value === '') {
-        this.formIsValid = false;
-        this.editForm.firstName.isValid = false;
-      }
-      if (this.editForm.lastName.value === '') {
-        this.formIsValid = false;
-        this.editForm.lastName.isValid = false;
-      }
-      if (this.editForm.description.value === '') {
-        this.formIsValid = false;
-        this.editForm.description.isValid = false;
-      }
-      if (!this.editForm.hourlyRate.value || this.editForm.hourlyRate.value < 0) {
-        this.formIsValid = false;
-        this.editForm.hourlyRate.isValid = false;
-      }
-      if (this.editForm.areas.value.length === 0) {
-        this.formIsValid = false;
-        this.editForm.areas.isValid = false;
-      }
-    },
-    saveEdit() {
-      this.validateForm();
-      if (!this.formIsValid) {
+    }
+    function clearValdity(field) {
+      field.isValid = true;
+      formIsValid.value = true;
+    }
+    //validateform logic
+    function validateForm() {
+      formIsValid.value = true;
+
+      const fields = ['firstName', 'lastName', 'description', 'hourlyRate', 'areas'];
+
+      fields.forEach((field) => {
+        switch (field) {
+          case 'firstName':
+          case 'lastName':
+          case 'description':
+            if (editForm[field].value === '') {
+              formIsValid.value = false;
+              editForm[field].isValid = false;
+            }
+            break;
+
+          case 'hourlyRate':
+            if (!editForm.hourlyRate.value || editForm.hourlyRate.value < 0) {
+              formIsValid.value = false;
+              editForm.hourlyRate.isValid = false;
+            }
+            break;
+
+          case 'areas':
+            if (editForm.areas.value.length === 0) {
+              formIsValid.value = false;
+              editForm.areas.isValid = false;
+            }
+            break;
+        }
+      });
+    }
+    //save update logic
+    function saveEdit() {
+      validateForm();
+      if (!formIsValid.value) {
         return;
       }
-      this.formIsValid = true;
+      formIsValid.value = true;
       // this.$store.dispatch('coachMod/updateCoach', { ...this.editForm });
-      this.$store.dispatch('coachMod/updateCoach', {
-        id: this.editForm.id,
-        firstName: this.editForm.firstName.value,
-        lastName: this.editForm.lastName.value,
-        hourlyRate: this.editForm.hourlyRate.value,
-        areas: this.editForm.areas.value,
-        description: this.editForm.description.value,
+      store.dispatch('coachMod/updateCoach', {
+        id: editForm.id,
+        firstName: editForm.firstName.value,
+        lastName: editForm.lastName.value,
+        hourlyRate: editForm.hourlyRate.value,
+        areas: editForm.areas.value,
+        description: editForm.description.value,
       });
       document.activeElement?.blur();
       const modal = window.bootstrap.Modal.getInstance(document.getElementById('editCoachModal'));
       modal.hide();
-    },
-    handleDelete(id) {
-      this.pendingDeleteId = id;
+    }
+    //handle delete open modal for delete coach
+    function handleDelete(id) {
+      pendingDeleteId.value = id;
       const modal = new window.bootstrap.Modal(document.getElementById('deleteConfirmModal'));
       modal.show();
-    },
-
-    confirmDelete() {
-      if (this.pendingDeleteId) {
-        this.$store.dispatch('coachMod/deleteCoach', this.pendingDeleteId);
-        this.pendingDeleteId = null;
+    }
+    //confirm delete will delete coach
+    function confirmDelete() {
+      if (pendingDeleteId.value) {
+        store.dispatch('coachMod/deleteCoach', pendingDeleteId.value);
+        pendingDeleteId.value = null;
       }
       const modal = window.bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal'));
       modal.hide();
-    },
-  },
-  watch: {
-    '$route.params.filter'() {
-      this.currentPage = 1;
-    },
+    }
+    //when site loads maintain default current page render 1
+    watch(
+      () => route.params.filter,
+      () => {
+        currentPage.value = 1;
+      }
+    );
+    return {
+      watch,
+      confirmDelete,
+      handleDelete,
+      saveEdit,
+      validateForm,
+      clearValdity,
+      openEditModal,
+      gotoPage,
+      previousPage,
+      nextPage,
+      paginatedCoaches,
+      totalPages,
+      filteredCoaches,
+      pendingDeleteId,
+      formIsValid,
+      editForm,
+      allAreas,
+      currentPage,
+      perPage,
+    };
   },
 };
 </script>
 
-<style>
+<style scoped>
 /* Reserve fixed height for error line — no layout shift */
 .field-wrap {
   position: relative;
+}
+input.invalid,
+textarea.invalid {
+  border: 1px solid red !important;
 }
 
 .field-error {

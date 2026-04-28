@@ -1,4 +1,3 @@
-import axios from 'axios';
 let timer;
 export default {
   async login(context, payload) {
@@ -18,40 +17,42 @@ export default {
     if (payload.mode === 'signup') {
       url = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyA-qP_yxVMNYqa4_OV1qZkcq0ga9qgVS7g';
     }
-    try {
-      const response = await axios.post(url, {
+    const response = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({
         email: payload.email,
         password: payload.password,
         returnSecureToken: true,
-      });
-      const responseData = await response.data;
-
-      //expire set
-      const expiresIn = +responseData.expiresIn * 1000;
-      //const expiresIn = 5000;
-      const expirationDate = new Date().getTime() + expiresIn;
-      //  const date3 = new Date().getTime(); returns converted today date and current time in millisec . so if expire greater logout
-
-      //local storage
-      localStorage.setItem('token', responseData.idToken);
-      localStorage.setItem('email', responseData.email);
-      localStorage.setItem('userId', responseData.localId);
-      localStorage.setItem('tokenExpiration', expirationDate);
-      //setTimeOut
-      timer = setTimeout(function () {
-        context.dispatch('autoLogout');
-      }, expiresIn);
-
-      context.commit('setUser', {
-        token: responseData.idToken,
-        userId: responseData.localId,
-        email: responseData.email,
-        //tokenExpiration:responseData.expiresIn,
-      });
-    } catch (err) {
-      const errorMessage = err.response?.data?.error?.message || 'authentication failed';
-      throw new errorMessage();
+      }),
+    });
+    const responseData = await response.json();
+    if (!response.ok) {
+      const error = new Error(responseData.message || 'signup failed');
+      throw error;
     }
+
+    //expire set
+    const expiresIn = +responseData.expiresIn * 1000;
+    //const expiresIn = 5000;
+    const expirationDate = new Date().getTime() + expiresIn;
+    //  const date3 = new Date().getTime(); returns converted today date and current time in millisec . so if expire greater logout
+
+    //local storage
+    localStorage.setItem('token', responseData.idToken);
+    localStorage.setItem('email', responseData.email);
+    localStorage.setItem('userId', responseData.localId);
+    localStorage.setItem('tokenExpiration', expirationDate);
+    //setTimeOut
+    timer = setTimeout(function () {
+      context.dispatch('autoLogout');
+    }, expiresIn);
+
+    context.commit('setUser', {
+      token: responseData.idToken,
+      userId: responseData.localId,
+      email: responseData.email,
+      //tokenExpiration:responseData.expiresIn,
+    });
   },
   tryLogin(context) {
     const token = localStorage.getItem('token');

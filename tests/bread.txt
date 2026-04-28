@@ -15,10 +15,17 @@ describe('Breadcrumb.vue', () => {
     const wrapper = mount(BreadCrumb, {
       global: {
         stubs: ['router-link'],
+        /*  mocks: {
+          $route: {
+            params: { filter: 'frontend' },
+            name: 'someRoute',
+          },
+        }, */
       },
     });
 
-    // so when composition api always see HTML target over there not in vm
+    // Access computed property via .vm
+    // expect(wrapper.vm.label).toBe('Frontend');
     expect(wrapper.find('.current').text()).toBe('Frontend');
   });
 
@@ -30,6 +37,12 @@ describe('Breadcrumb.vue', () => {
     const wrapper = mount(BreadCrumb, {
       global: {
         stubs: ['router-link'],
+        /*  mocks: {
+          $route: {
+            params: { id: 'c1' }, // No filter here
+            name: 'details',
+          },
+        }, */
       },
     });
 
@@ -45,6 +58,12 @@ describe('Breadcrumb.vue', () => {
     const wrapper = mount(BreadCrumb, {
       global: {
         stubs: ['router-link'],
+        /* mocks: {
+          $route: {
+            params: {},
+            name: 'Settings',
+          },
+        }, */
       },
     });
 

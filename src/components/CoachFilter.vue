@@ -3,8 +3,7 @@
     <div>
       <h5 class="mt-2">Dashboard</h5>
     </div>
-
-    <!-- <h5 class="mb-2">Coach Category Filter</h5> -->
+    <!-- Filter Cards -->
     <div class="row mt-4">
       <div class="col-12 col-sm-6 col-md-3">
         <router-link class="text-decoration-none text-dark" :to="{ name: 'coachList', params: { filter: 'frontend' } }">

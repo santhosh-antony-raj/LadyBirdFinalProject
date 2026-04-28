@@ -12,8 +12,6 @@ export default {
     return state.autoLogoutValue;
   },
   userEmail(state) {
-    console.log(state.email);
-
     return state.email;
   },
 };

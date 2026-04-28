@@ -1,9 +1,5 @@
 export default {
   getMsg(state, getters, rootState, rootGetters) {
-    console.log('rootgetters', rootGetters);
-    /*  const msg = state.msg;
-        console.log(msg);
-        return msg; */
     const coachId = rootGetters['userAuthMod/userId'];
     return state.msg.filter((msg) => msg.coachId === coachId);
   },

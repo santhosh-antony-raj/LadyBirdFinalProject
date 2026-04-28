@@ -9,9 +9,7 @@
           </a>
         </li>
       </ul>
-      <!--end::Start Navbar Links-->
-
-      <!--begin::End Navbar Links-->
+      <!--begin::Navbar Links-->
       <ul class="navbar-nav ms-auto" role="navigation" aria-label="Navigation 2">
         <!--begin::User Menu Dropdown-->
         <li class="nav-item dropdown user-menu">
@@ -20,7 +18,7 @@
             <span class="d-none d-md-inline">{{ loggedUEmail }}</span>
           </a>
 
-          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow rounded-1 text-light fs-6" style="width: 30px !important">
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow rounded-1 text-light fs-6">
             <li>
               <a href="#" class="dropdown-item text-dark" @click="autoLog"> <i class="fa fa-sign-out-alt m-2"></i> Logout </a>
             </li>
@@ -29,7 +27,7 @@
 
         <!--end::User Menu Dropdown-->
       </ul>
-      <!--end::End Navbar Links-->
+      <!--end::Navbar Links-->
     </div>
     <!--end::Container-->
   </nav>
@@ -49,3 +47,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.dropdown-menu {
+  width: 30px !important;
+}
+</style>

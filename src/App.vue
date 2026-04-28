@@ -8,9 +8,7 @@
     </template>
 
     <!-- Main Content -->
-    <!-- Breadcrumb -->
-
-    <div class="app-main" style="padding-bottom: 0px !important">
+    <div class="app-main">
       <transition name="route" mode="out-in">
         <router-view></router-view>
       </transition>
@@ -26,7 +24,9 @@
 import TheFooter from './components/layout/TheFooter.vue';
 import TheHeader from './components/layout/TheHeader.vue';
 import TheSidebar from './components/layout/TheSidebar.vue';
-
+import { computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import { useStore } from 'vuex';
 export default {
   components: {
     TheHeader,
@@ -34,14 +34,20 @@ export default {
     TheFooter,
   },
   // App.vue
-
-  created() {
-    this.$store.dispatch('userAuthMod/tryLogin'); // ← restore token on refresh
-  },
-  computed: {
-    isAuthPage() {
-      return ['login', 'signup'].includes(this.$route.name);
-    },
+  setup() {
+    const route = useRoute();
+    const store = useStore();
+    //Check is login or signup to hide header,sidebar,footer
+    const isAuthPage = computed(() => {
+      return ['login', 'signup'].includes(route.name);
+    });
+    //helps to maintain  local session while refresh
+    onMounted(() => {
+      store.dispatch('userAuthMod/tryLogin'); // ← restore token on refresh
+    });
+    return {
+      isAuthPage,
+    };
   },
 };
 </script>
@@ -63,5 +69,8 @@ export default {
 .route-leave-from {
   opacity: 1;
   transform: translateY(0);
+}
+.app-main {
+  padding-bottom: 0px !important;
 }
 </style>

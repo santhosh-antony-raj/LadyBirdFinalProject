@@ -1,6 +1,13 @@
 import { mount } from '@vue/test-utils';
 import ContactCoach from '../../src/pages/contact/ContactCoach.vue';
-
+import { useRoute } from 'vue-router';
+import { useStore } from 'vuex';
+jest.mock('vue-router', () => ({
+  useRoute: jest.fn(),
+}));
+jest.mock('vuex', () => ({
+  useStore: jest.fn(),
+}));
 describe('ContactCoach.vue', () => {
   const wrapper = mount(ContactCoach);
   //data
@@ -12,6 +19,8 @@ describe('ContactCoach.vue', () => {
   //methods
   it('test methods saveData', async () => {
     const dispatchspy = jest.fn();
+    useRoute.mockReturnValue({ params: { id: 'c1' } });
+    useStore.mockReturnValue({ dispatch: dispatchspy });
 
     // 1. Mock the Bootstrap Toast constructor and show method
     const showMock = jest.fn();
@@ -24,12 +33,6 @@ describe('ContactCoach.vue', () => {
     const wrapper = mount(ContactCoach, {
       // 2. CRITICAL: Attach to document so getElementById works
       attachTo: document.body,
-      global: {
-        mocks: {
-          $store: { dispatch: dispatchspy },
-          $route: { params: { id: 'c1' } },
-        },
-      },
     });
 
     // 3. Fill values
@@ -48,7 +51,7 @@ describe('ContactCoach.vue', () => {
 
     expect(dispatchspy).toHaveBeenCalled();
     expect(showMock).toHaveBeenCalled(); // Verifies toast.show() was called
-    expect(dispatchspy).toHaveBeenCalledWith('contactMod/addMsg', expect.objectContaining({ coachId: 'c1', email: { isValid: true, value: 'sam@gmail.com' }, msg: { isValid: true, value: 'hello' } })); //expect.any(object);
+    expect(dispatchspy).toHaveBeenCalledWith('contactMod/addMsg', expect.objectContaining({ coachId: 'c1', email: 'sam@gmail.com', msg: 'hello' })); //expect.any(object);
     // 6. Cleanup
     wrapper.unmount();
   });

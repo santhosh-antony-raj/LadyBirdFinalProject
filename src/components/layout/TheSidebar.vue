@@ -15,12 +15,7 @@
       <div class="os-size-observer">
         <div class="os-size-observer-listener"></div>
       </div>
-      <div
-        class=""
-        data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYScroll"
-        tabindex="-1"
-        style="margin-right: -16px; margin-bottom: -16px; margin-left: 0px; top: -8px; right: auto; left: -8px; width: calc(100% + 16px); padding: 8px"
-      >
+      <div class="style1" data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYScroll" tabindex="-1">
         <nav class="mt-2">
           <!--begin::Sidebar Menu-->
           <!-- data-lte-toggle="treeview" -->
@@ -55,16 +50,14 @@
         </nav>
       </div>
       <div
-        class="os-scrollbar os-scrollbar-horizontal os-theme-light os-scrollbar-auto-hide os-scrollbar-handle-interactive os-scrollbar-track-interactive os-scrollbar-cornerless os-scrollbar-unusable os-scrollbar-auto-hide-hidden"
-        style="--os-viewport-percent: 1; --os-scroll-direction: 0"
+        class="os-scrollbar os-scrollbar-horizontal os-theme-light os-scrollbar-auto-hide os-scrollbar-handle-interactive os-scrollbar-track-interactive os-scrollbar-cornerless os-scrollbar-unusable os-scrollbar-auto-hide-hidden style2"
       >
         <div class="os-scrollbar-track">
           <div class="os-scrollbar-handle"></div>
         </div>
       </div>
       <div
-        class="os-scrollbar os-scrollbar-vertical os-theme-light os-scrollbar-auto-hide os-scrollbar-handle-interactive os-scrollbar-track-interactive os-scrollbar-visible os-scrollbar-cornerless os-scrollbar-auto-hide-hidden"
-        style="--os-viewport-percent: 0.1612; --os-scroll-direction: 0"
+        class="os-scrollbar os-scrollbar-vertical os-theme-light os-scrollbar-auto-hide os-scrollbar-handle-interactive os-scrollbar-track-interactive os-scrollbar-visible os-scrollbar-cornerless os-scrollbar-auto-hide-hidden style 3"
       >
         <div class="os-scrollbar-track">
           <div class="os-scrollbar-handle"></div>
@@ -74,3 +67,24 @@
     <!--end::Sidebar Wrapper-->
   </aside>
 </template>
+
+<style scoped>
+.style1 {
+  margin-right: -16px;
+  margin-bottom: -16px;
+  margin-left: 0px;
+  top: -8px;
+  right: auto;
+  left: -8px;
+  width: calc(100% + 16px);
+  padding: 8px;
+}
+.style2 {
+  --os-viewport-percent: 1;
+  --os-scroll-direction: 0;
+}
+.style3 {
+  --os-viewport-percent: 0.1612;
+  --os-scroll-direction: 0;
+}
+</style>
